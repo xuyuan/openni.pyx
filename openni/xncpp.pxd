@@ -7,6 +7,7 @@ ctypedef np.uint16_t XnUInt16
 ctypedef np.uint32_t XnUInt32
 ctypedef np.int32_t XnInt32
 ctypedef char XnChar
+ctypedef float XnFloat
 
 ctypedef XnInt32 XnProductionNodeType
 cdef extern from 'XnTypes.h':
@@ -14,6 +15,13 @@ cdef extern from 'XnTypes.h':
         XnUInt8 nRed
         XnUInt8 nGreen
         XnUInt8 nBlue
+
+    cdef struct XnVector3D:
+        XnFloat X
+        XnFloat Y
+        XnFloat Z
+
+    ctypedef XnVector3D XnPoint3D
 
     # define const pointer
     ctypedef char* XnRGB24PixelConstPtr "const XnRGB24Pixel*"
@@ -52,7 +60,8 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     cdef cppclass CVersion "xn::Version":
         bool operator==(CVersion right)
 
-    CVersion *newVersion "new xn::Version" (XnUInt8, XnUInt8, XnUInt16, XnUInt32)
+    CVersion *newVersion "new xn::Version" (XnUInt8, XnUInt8,
+                                            XnUInt16, XnUInt32)
     void delVersion "delete" (CVersion *rect)
 
     ##### MapMetaData ####
@@ -95,6 +104,9 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     cdef cppclass CDepthGenerator "xn::DepthGenerator" (CProductionNode):
         void GetMetaData(CDepthMetaData& metaData)
         XnDepthPixelConstPtr GetDepthMap()
+        XnStatus ConvertProjectiveToRealWorld(XnUInt32 nCount,
+                                              XnPoint3D* aProjective,
+                                              XnPoint3D* aRealWorld)
 
     CDepthGenerator *newDepthGenerator "new xn::DepthGenerator" ()
 

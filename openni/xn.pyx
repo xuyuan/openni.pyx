@@ -109,14 +109,51 @@ cdef class DepthGenerator(ProductionNode):
         w, h = self.GetMetaData().Res()
 
         cdef np.npy_intp shape[2]
-        shape[0] = <np.npy_intp>(w)
-        shape[1] = <np.npy_intp>(h)
+        shape[0] = <np.npy_intp>(h)
+        shape[1] = <np.npy_intp>(w)
 
         ndarray = np.PyArray_SimpleNewFromData(2, shape,
-                                               np.NPY_UINT16, <void *> pixel)
+                                               np.NPY_UINT16, <void*> pixel)
 
         np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
         return ndarray
+
+    def ConvertDepthMapToProjective(self, pixel not None):
+        """np.ndarray[np.uint16_t, ndim=2]
+        coverts depth map to projective coodrinates
+        """
+        cdef int h = pixel.shape[0]
+        cdef int w = pixel.shape[1]
+        cdef np.npy_intp shape[3]
+        shape[0] = h
+        shape[1] = w
+        shape[2] = <np.npy_intp>(3)
+        cdef np.ndarray[np.npy_float, ndim=3] aProjective = np.PyArray_SimpleNew(3, shape, np.NPY_FLOAT)
+        for y in range(h):
+            for x in range(w):
+                aProjective[y, x, 0] = y
+                aProjective[y, x, 1] = x
+                aProjective[y, x, 2] = pixel[y, x]
+        return aProjective
+
+    def ConvertProjectiveToRealWorld(self, aProjective):
+        """
+        Converts a list of points from projective coordinates to real
+        world coordinates.
+        """
+        cdef XnPoint3D* aProjectiveData = <XnPoint3D*>np.PyArray_DATA(aProjective)
+        # aRealWorld = np.PyArray_NewLikeArray(aProjective, np.NPY_KEEPORDER, 0, 1)
+        
+        cdef np.npy_intp* shape = np.PyArray_DIMS(aProjective)
+        cdef int ndim = np.PyArray_NDIM(aProjective)
+        aRealWorld = np.PyArray_SimpleNew(ndim, shape, np.NPY_FLOAT)
+        cdef XnPoint3D* aRealWorldData =  <XnPoint3D*>np.PyArray_DATA(aRealWorld)
+
+        this = <CDepthGenerator*>(self._this)
+        this.ConvertProjectiveToRealWorld(shape[0]*shape[1],
+                                          aProjectiveData, 
+                                          aRealWorldData)
+        return aRealWorld
 
 cdef class ImageGenerator(ProductionNode):
 
@@ -138,8 +175,8 @@ cdef class ImageGenerator(ProductionNode):
 
         # Create a C array to describe the shape of the ndarray
         cdef np.npy_intp shape[3]
-        shape[0] = <np.npy_intp>(w)
-        shape[1] = <np.npy_intp>(h)
+        shape[0] = <np.npy_intp>(h)
+        shape[1] = <np.npy_intp>(w)
         shape[2] = <np.npy_intp>(3)
 
         # Use the PyArray_SimpleNewFromData function from numpy to create a
