@@ -1,8 +1,6 @@
 
-# from opennipyx import test
-from opennipyx import test
-# from opennipyx.test import Rectangle
-from opennipyx import xn
+from openni import test
+from openni import xn
 
 r = test.Rectangle(1, 2, 3, 4)
 print r

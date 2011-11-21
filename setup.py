@@ -3,19 +3,19 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 
-test = Extension("opennipyx.test",
-              sources=["opennipyx/test.pyx", 'opennipyx/cpp_rect.cpp'],
+test = Extension("openni.test",
+              sources=["openni/test.pyx", 'openni/cpp_rect.cpp'],
               include_dirs=["."],
               language="c++")
 
-xn = Extension("opennipyx.xn",
-              sources=['opennipyx/xn.pyx'],
+xn = Extension("openni.xn",
+              sources=['openni/xn.pyx'],
               include_dirs=[".", '/usr/include/openni'],
               language="c++")
 
 setup(
-  name = 'test',
-  packages=['opennipyx'],
+  name = 'openni',
+  packages=['openni'],
   ext_modules=[test, xn],
   cmdclass = {'build_ext': build_ext},
 )

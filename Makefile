@@ -4,7 +4,7 @@ all:
 
 clean:
 	rm -rf build
-	rm opennipyx/*.so
+	rm openni/*.so
 
 test:
 	python test.py
