@@ -27,3 +27,5 @@ assert scriptNode
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 print imageGenerator
 
+while context.WaitAndUpdateAll():
+    print 'update'

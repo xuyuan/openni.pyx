@@ -17,6 +17,15 @@ cdef class Version:
         else:
             raise NotImplemented
 
+cdef class ImageMetaData:
+    cdef CImageMetaData* _this
+
+    def __cinit__(self):
+        self._this = newImageMetaData()
+
+    def __dealloc__(self):
+        delImageMetaData(self._this)
+
 
 cdef class ScriptNode:
     cdef CScriptNode* _this
@@ -42,6 +51,12 @@ cdef class ImageGenerator(ProductionNode):
     def __init__(self):
         self._this = newImageGenerator()
 
+    def GetMetaData(self):
+        metaData = ImageMetaData()
+        _this = <CImageGenerator*>(self._this)
+        _this.GetMetaData(metaData._this[0])
+        return metaData
+
 cdef class Context:
     cdef CContext *_this
 
@@ -52,10 +67,20 @@ cdef class Context:
         delContext(self._this)
 
     def Init(self):
+        """
+        Initializes the OpenNI library.
+
+        This function must be called before calling any other OpenNI
+        function (except for :func:`InitFromXmlFile()`)
+        """
         status = self._this.Init()
         return status == XN_STATUS_OK
 
     def InitFromXmlFile(self, strFileName):
+        """
+        Initializes OpenNI context, and then configures it using the
+        given file.
+        """
         cdef char* s = strFileName
         scriptNode = ScriptNode()
         status = self._this.InitFromXmlFile(s, scriptNode._this[0])
@@ -63,6 +88,9 @@ cdef class Context:
             return scriptNode
 
     def FindExistingNode(self, XnProductionNodeType nodeType):
+        """
+        Returns the first found existing node of the specified type. 
+        """
         if nodeType == XN_NODE_TYPE_IMAGE:
             node = ImageGenerator()
         else:
@@ -71,3 +99,11 @@ cdef class Context:
         status = self._this.FindExistingNode(nodeType, node._this[0])
         if status == XN_STATUS_OK:
             return node
+
+    def WaitAndUpdateAll(self):
+        """
+        Updates all generators nodes in the context, waiting for all
+        to have new data.
+        """
+        status = self._this.WaitAndUpdateAll()
+        return status == XN_STATUS_OK

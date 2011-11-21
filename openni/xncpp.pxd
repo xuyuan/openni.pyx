@@ -42,6 +42,24 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     CVersion *newVersion "new xn::Version" (XnUInt8, XnUInt8, XnUInt16, XnUInt32)
     void delVersion "delete" (CVersion *rect)
 
+    ##### MapMetaData ####
+    cdef cppclass CMapMetaData "xn::MapMetaData":
+        XnUInt32 XRes()
+        XnUInt32 YRes()
+        XnUInt32 FPS()
+
+    CMapMetaData *newMapMetaData "new xn::MapMetaData" ()
+
+    void delMapMetaData "delete" (CMapMetaData* data)
+
+    ##### ImageMetaData ####
+    cdef cppclass CImageMetaData "xn::ImageMetaData" (CMapMetaData):
+        pass
+
+    CImageMetaData *newImageMetaData "new xn::ImageMetaData" ()
+
+    void delImageMetaData "delete" (CImageMetaData* data)
+
     ##### ScriptNode #####
     cdef cppclass CScriptNode "xn::ScriptNode":
         pass
@@ -60,17 +78,16 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     ##### ImageGenerator ######
     cdef cppclass CImageGenerator "xn::ImageGenerator" (CProductionNode):
-        pass
+        void GetMetaData(CImageMetaData& metaData)
 
     CImageGenerator *newImageGenerator "new xn::ImageGenerator" ()
-
-    void delImageGenerator "delete" (CImageGenerator *node)
 
     ##### Context #####
     cdef cppclass CContext "xn::Context":
         XnStatus Init()
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
+        XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()
 
     void delContext "delete" (CContext *context)
