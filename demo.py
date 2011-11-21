@@ -12,8 +12,6 @@ cvdepth = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 # print v1 == v2
 
 context = xn.Context()
-ret = context.Init()
-assert ret
 
 scriptNode = context.InitFromXmlFile('demo.xml')
 assert scriptNode
@@ -36,4 +34,9 @@ try:
         if key == 27:
             break
 finally:
-    context.Release()
+    # release all rescourses
+    del context
+    del scriptNode
+    del depthGenerator
+    del imageGenerator
+

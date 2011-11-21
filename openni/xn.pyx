@@ -75,7 +75,6 @@ cdef class ScriptNode:
     def __dealloc__(self):
         delScriptNode(self._this)
 
-
 cdef class ProductionNode:
     cdef CProductionNode* _this
 
@@ -164,15 +163,11 @@ cdef class Context:
     def __dealloc__(self):
         delContext(self._this)
 
-    def Init(self):
-        """
-        Initializes the OpenNI library.
-
-        This function must be called before calling any other OpenNI
-        function (except for :func:`InitFromXmlFile()`)
+    def __init__(self):
+        """Initializes the OpenNI library.
         """
         status = self._this.Init()
-        return status == XN_STATUS_OK
+        assert status == XN_STATUS_OK
 
     def InitFromXmlFile(self, strFileName):
         """
@@ -184,13 +179,6 @@ cdef class Context:
         status = self._this.InitFromXmlFile(s, scriptNode._this[0])
         if status == XN_STATUS_OK:
             return scriptNode
-
-    def Release(self):
-        """
-        Releases a context object, decreasing its ref count by 1. If
-        reference count has reached 0, the context will be destroyed.
-        """
-        self._this.Release()
 
     def FindExistingNode(self, XnProductionNodeType nodeType):
         """
