@@ -9,9 +9,10 @@ test = Extension("openni.test",
               language="c++")
 
 xn = Extension("openni.xn",
-              sources=['openni/xn.pyx'],
-              include_dirs=[".", '/usr/include/openni'],
-              language="c++")
+               sources=['openni/xn.pyx'],
+               include_dirs=[".", '/usr/include/openni'],
+               libraries=["OpenNI"],
+               language="c++")
 
 setup(
   name = 'openni',

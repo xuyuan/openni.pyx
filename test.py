@@ -13,5 +13,6 @@ print r
 print "Now the aread is:", r.getArea()
 
 
-version = xn.Version()
-print version
+v1 = xn.Version(0, 1, 1, 1)
+v2 = xn.Version(0, 1, 1, 1)
+print v1 == v2

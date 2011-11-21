@@ -6,5 +6,5 @@ clean:
 	rm -rf build
 	rm openni/*.so
 
-test:
+test: all
 	python test.py
