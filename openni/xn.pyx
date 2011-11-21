@@ -1,3 +1,12 @@
+"""
+Cython wrapper for namespace xn of OpenNI
+=========================================
+"""
+
+__license__ = "MIT"
+__author__ =  "Xu, Yuan"
+__email__ = "xuyuan.cn@gmail.com"
+
 from xncpp cimport *
 import numpy as np
 cimport numpy as np
@@ -86,9 +95,29 @@ cdef class DepthGenerator(ProductionNode):
         """Gets the current depth-map meta data."""
         metaData = DepthMetaData()
         metaDataPtr = <CDepthMetaData*>(metaData._this)
-        _this = <CDepthGenerator*>(self._this)
-        _this.GetMetaData(metaDataPtr[0])
+        this = <CDepthGenerator*>(self._this)
+        this.GetMetaData(metaDataPtr[0])
         return metaData
+
+    def GetDepthMap(self):
+        """
+        Gets the current depth-map. This map is updated after a call
+        to xnWaitAndUpdateData().
+        """
+        this = <CDepthGenerator*>(self._this)
+        cdef XnDepthPixelConstPtr pixel
+        pixel = this.GetDepthMap()
+        w, h = self.GetMetaData().Res()
+
+        cdef np.npy_intp shape[2]
+        shape[0] = <np.npy_intp>(w)
+        shape[1] = <np.npy_intp>(h)
+
+        ndarray = np.PyArray_SimpleNewFromData(2, shape,
+                                               np.NPY_UINT16, <void *> pixel)
+
+        np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
+        return ndarray
 
 cdef class ImageGenerator(ProductionNode):
 
@@ -98,8 +127,8 @@ cdef class ImageGenerator(ProductionNode):
     def GetMetaData(self):
         metaData = ImageMetaData()
         metaDataPtr = <CImageMetaData*>(metaData._this)
-        _this = <CImageGenerator*>(self._this)
-        _this.GetMetaData(metaDataPtr[0])
+        this = <CImageGenerator*>(self._this)
+        this.GetMetaData(metaDataPtr[0])
         return metaData
 
     def GetRGB24ImageMap(self):

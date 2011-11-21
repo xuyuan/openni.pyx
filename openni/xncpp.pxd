@@ -18,6 +18,9 @@ cdef extern from 'XnTypes.h':
     # define const pointer
     ctypedef char* XnRGB24PixelConstPtr "const XnRGB24Pixel*"
 
+    ctypedef XnUInt16 XnDepthPixel
+    ctypedef char* XnDepthPixelConstPtr "const XnDepthPixel*"
+
     enum XnPredefinedProductionNodeType:
         XN_NODE_TYPE_INVALID
         XN_NODE_TYPE_DEVICE
@@ -91,7 +94,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     ##### DepthGenerator #####
     cdef cppclass CDepthGenerator "xn::DepthGenerator" (CProductionNode):
         void GetMetaData(CDepthMetaData& metaData)
-        # XnDepthPixel* 	GetDepthMap()
+        XnDepthPixelConstPtr GetDepthMap()
 
     CDepthGenerator *newDepthGenerator "new xn::DepthGenerator" ()
 
