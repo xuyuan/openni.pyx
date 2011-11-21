@@ -1,5 +1,4 @@
 
-from openni import test
 from openni import xn
 
 import cv
@@ -25,6 +24,7 @@ try:
         image = imageGenerator.GetRGB24ImageMap()
         # print image
         cv.SetData(cvimage, image.tostring())
+        cv.CvtColor(cvimage, cvimage, cv.CV_RGB2BGR)
         cv.ShowImage( "Image Stream", cvimage )
         cv.WaitKey(5)  # for showing image 
 finally:
