@@ -24,6 +24,6 @@ assert ret
 scriptNode = context.InitFromXmlFile('BasicColorAndDepth.xml')
 assert scriptNode
 
-imageGenerator = context.FindExistingNode(xn.XN_NODE_TYPE_IMAGE)
+imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 print imageGenerator
 
