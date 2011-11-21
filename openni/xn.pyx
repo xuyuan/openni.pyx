@@ -113,13 +113,14 @@ cdef class DepthGenerator(ProductionNode):
         shape[1] = <np.npy_intp>(w)
 
         ndarray = np.PyArray_SimpleNewFromData(2, shape,
-                                               np.NPY_UINT16, <void*> pixel)
+                                               np.NPY_UINT16,
+                                               <void*> pixel)
 
         np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
         return ndarray
 
-    def ConvertDepthMapToProjective(self, pixel not None):
-        """np.ndarray[np.uint16_t, ndim=2]
+    def ConvertDepthMapToProjective(self, np.ndarray[np.uint16_t, ndim=2] pixel not None):
+        """
         coverts depth map to projective coodrinates
         """
         cdef int h = pixel.shape[0]
@@ -129,6 +130,8 @@ cdef class DepthGenerator(ProductionNode):
         shape[1] = w
         shape[2] = <np.npy_intp>(3)
         cdef np.ndarray[np.npy_float, ndim=3] aProjective = np.PyArray_SimpleNew(3, shape, np.NPY_FLOAT)
+        np.PyArray_UpdateFlags(aProjective, aProjective.flags.num | np.NPY_OWNDATA)
+
         for y in range(h):
             for x in range(w):
                 aProjective[y, x, 0] = y
@@ -142,15 +145,18 @@ cdef class DepthGenerator(ProductionNode):
         world coordinates.
         """
         cdef XnPoint3D* aProjectiveData = <XnPoint3D*>np.PyArray_DATA(aProjective)
-        # aRealWorld = np.PyArray_NewLikeArray(aProjective, np.NPY_KEEPORDER, 0, 1)
-        
         cdef np.npy_intp* shape = np.PyArray_DIMS(aProjective)
         cdef int ndim = np.PyArray_NDIM(aProjective)
+
         aRealWorld = np.PyArray_SimpleNew(ndim, shape, np.NPY_FLOAT)
+        np.PyArray_UpdateFlags(aRealWorld, aRealWorld.flags.num | np.NPY_OWNDATA)
         cdef XnPoint3D* aRealWorldData =  <XnPoint3D*>np.PyArray_DATA(aRealWorld)
+        cdef int nCount = 1
+        for i in range(ndim - 1):
+            nCount *= shape[i]
 
         this = <CDepthGenerator*>(self._this)
-        this.ConvertProjectiveToRealWorld(shape[0]*shape[1],
+        this.ConvertProjectiveToRealWorld(nCount,
                                           aProjectiveData, 
                                           aRealWorldData)
         return aRealWorld
