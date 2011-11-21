@@ -238,6 +238,16 @@ cdef class Context:
         if status == XN_STATUS_OK:
             return node
 
+    def OpenFileRecording(self, strFileName):
+        """
+        Opens a recording file, adding all nodes in it to the context.
+        """
+        cdef char* s = strFileName
+        playerNode = ProductionNode()
+        status = self._this.OpenFileRecording(s, playerNode._this[0])
+        if status == XN_STATUS_OK:
+            return playerNode
+
     def WaitAndUpdateAll(self):
         """
         Updates all generators nodes in the context, waiting for all

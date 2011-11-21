@@ -122,6 +122,8 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus Init()
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
+        XnStatus OpenFileRecording(XnChar* strFileName, CProductionNode& playerNode)
+
         XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()
 
