@@ -71,6 +71,9 @@ cdef class Context:
     def Init(self):
         return self._this.Init()
 
-    def InitFromXmlFile(self, strFileName, ScriptNode scriptNode):
+    def InitFromXmlFile(self, strFileName):
         cdef char* s = strFileName
-        return self._this.InitFromXmlFile(s, scriptNode._this[0])
+        scriptNode = ScriptNode()
+        status = self._this.InitFromXmlFile(s, scriptNode._this[0])
+        if status == XN_STATUS_OK:
+            return scriptNode

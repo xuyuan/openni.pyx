@@ -21,6 +21,5 @@ context = xn.Context()
 ret = context.Init()
 assert ret == xn.XN_STATUS_OK
 
-scriptNode = xn.ScriptNode()
-ret = context.InitFromXmlFile('BasicColorAndDepth.xml', scriptNode)
-assert ret == xn.XN_STATUS_OK
+scriptNode = context.InitFromXmlFile('BasicColorAndDepth.xml')
+assert scriptNode
