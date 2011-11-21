@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from openni import xn
 
@@ -14,7 +15,7 @@ context = xn.Context()
 ret = context.Init()
 assert ret
 
-scriptNode = context.InitFromXmlFile('BasicColorAndDepth.xml')
+scriptNode = context.InitFromXmlFile('demo.xml')
 assert scriptNode
 
 depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
