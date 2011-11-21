@@ -49,6 +49,20 @@ cdef extern from 'XnTypes.h':
         XN_NODE_TYPE_SCRIPT
         XN_NODE_TYPE_FIRST_EXTENSION
 
+    enum XnRecordMedium:
+        XN_RECORD_MEDIUM_FILE
+
+ctypedef XnUInt32 XnCodecID
+
+cdef extern from "XnCodecIDs.h":
+    enum:
+        XN_CODEC_NULL
+        XN_CODEC_UNCOMPRESSED
+        XN_CODEC_JPEG
+        XN_CODEC_16Z
+        XN_CODEC_16Z_EMB_TABLES
+        XN_CODEC_8Z
+
 ctypedef XnUInt32 XnStatus
 
 cdef extern from 'XnStatus.h':
@@ -116,6 +130,15 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnRGB24PixelConstPtr GetRGB24ImageMap()
 
     CImageGenerator *newImageGenerator "new xn::ImageGenerator" ()
+
+    ##### Recorder #####
+    cdef cppclass CRecorder "xn::Recorder" (CProductionNode):
+        XnStatus SetDestination(XnRecordMedium destType, XnChar *strDest)	
+        XnStatus AddNodeToRecording(CProductionNode &Node, XnCodecID compression)
+        XnStatus RemoveNodeFromRecording(CProductionNode &Node)
+        XnStatus Record()
+
+    CRecorder *newRecorder "new xn::Recorder" ()
 
     ##### Context #####
     cdef cppclass CContext "xn::Context":

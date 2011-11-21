@@ -18,19 +18,22 @@ assert scriptNode
 
 depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
+# recorder = context.FindExistingNode(xn.NODE_TYPE_RECORDER)
 
 try:
     while context.WaitAndUpdateAll():
-        depth = depthGenerator.GetDepthMap()
-        image = imageGenerator.GetRGB24ImageMap()
+        if depthGenerator:
+            depth = depthGenerator.GetDepthMap()
+            cv.SetData(cvdepth, depth.tostring())
+            cv.ShowImage("Depth Stream", cvdepth)
 
-        # for showing image
-        cv.SetData(cvdepth, depth.tostring())
-        cv.SetData(cvimage, image.tostring())
-        cv.CvtColor(cvimage, cvimage, cv.CV_RGB2BGR)
-        cv.ShowImage("Depth Stream", cvdepth)
-        cv.ShowImage("Image Stream", cvimage)
-        key = cv.WaitKey(5)  
+        if imageGenerator:
+            image = imageGenerator.GetRGB24ImageMap()
+            cv.SetData(cvimage, image.tostring())
+            cv.CvtColor(cvimage, cvimage, cv.CV_RGB2BGR)
+            cv.ShowImage("Image Stream", cvimage)
+
+        key = cv.WaitKey(30)  
         if key == 27:
             break
 finally:

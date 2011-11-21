@@ -14,6 +14,16 @@ np.import_array()
 
 NODE_TYPE_IMAGE = XN_NODE_TYPE_IMAGE
 NODE_TYPE_DEPTH = XN_NODE_TYPE_DEPTH
+NODE_TYPE_RECORDER = XN_NODE_TYPE_RECORDER
+
+RECORD_MEDIUM_FILE = XN_RECORD_MEDIUM_FILE
+
+CODEC_NULL = XN_CODEC_NULL
+CODEC_UNCOMPRESSED = XN_CODEC_UNCOMPRESSED
+CODEC_JPEG = XN_CODEC_JPEG
+CODEC_16Z = XN_CODEC_16Z
+CODEC_16Z_EMB_TABLES = XN_CODEC_16Z_EMB_TABLES
+CODEC_8Z = XN_CODEC_8Z
 
 cdef class Version:
     cdef CVersion *_this
@@ -164,7 +174,7 @@ cdef class DepthGenerator(ProductionNode):
 cdef class ImageGenerator(ProductionNode):
 
     def __init__(self):
-        self._this = newImageGenerator()
+            self._this = newImageGenerator()
 
     def GetMetaData(self):
         metaData = ImageMetaData()
@@ -197,7 +207,90 @@ cdef class ImageGenerator(ProductionNode):
         np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
         return ndarray
 
+cdef class Recorder(ProductionNode):
+    """
+    To record, an application should create a Recorder node, and set
+    its destination (the file name to which it should write). The
+    application should then add to the recorder node, every node it
+    wants to record. When adding a node to the recorder, the recorder
+    reads its configuration and records it. It also registers to every
+    possible event of the node, so that when any configuration change
+    takes place, it is also recorded.
+
+    Once all required nodes are added, the application can read data
+    from the nodes and record it. Recording of data can be achieved
+    either by explicitly calling the xn::Recorder::Record() function,
+    or by using one of the UpdateAll functions (see Reading Data).
+
+    Applications that initialize OpenNI using an XML file can easily
+    record their session without any change to the code. All that is
+    required is that they create an additional node in the XML file
+    for the recorder, add nodes to it, and when the application calls
+    one of the UpdateAll functions, recording will occur.
+    """
+    def __init__(self):
+        self._this = newRecorder()
+
+    def SetDestination(self, destType, strDest):
+        """
+        Tells the recorder where to record.
+
+        :param destType: The type of medium to record to. Currently
+            only RECORD_MEDIUM_FILE is supported
+
+         :param strDest: Recording destination. If destType is
+            RECORD_MEDIUM_FILE, this specifies a file name.
+        """
+        this = <CRecorder*>(self._this)
+        cdef char* s = strDest
+        status = this.SetDestination(destType, s)
+        assert status == XN_STATUS_OK
+        
+
+    def AddNodeToRecording(self, ProductionNode node, compression=CODEC_NULL):
+        """
+        Adds a node to recording and start recording it. This function
+        must be called on each node that is to be recorded with this
+        recorder.
+
+        :param node: The node to add to the recording.
+
+        :param compression: The type of compression that will be used
+        to encode the node's data. If CODEC_NULL is specified, a
+        default compression will be chosen according to the node type.
+        """
+        this = <CRecorder*>(self._this)
+        status = this.AddNodeToRecording(node._this[0], compression)
+        assert status == XN_STATUS_OK
+
+    def RemoveNodeFromRecording(self, ProductionNode node):
+        """
+        Removes node from recording and stop recording it.
+        """
+        this = <CRecorder*>(self._this)
+        status = this.RemoveNodeFromRecording(node._this[0])
+        assert status == XN_STATUS_OK
+
+    def Record(self):
+        """
+        Records one frame of data from each node that was added to the
+        recorder with xnAddNodeToRecording.
+        """
+        this = <CRecorder*>(self._this)
+        status = this.Record()
+        assert status == XN_STATUS_OK
+
 cdef class Context:
+    """
+    The context is the main object in OpenNI. A context is an object
+    that holds the complete state of applications using OpenNI,
+    including all the production chains used by the application. The
+    same application can create more than one context, but the
+    contexts cannot share information. For example, a middleware node
+    cannot use a device node from another context. The context must be
+    initialized once, prior to its initial use. At this point, all
+    plugged-in modules are loaded and analyzed.
+    """
     cdef CContext *_this
 
     def __cinit__(self):
@@ -231,6 +324,8 @@ cdef class Context:
             node = DepthGenerator()
         elif nodeType == XN_NODE_TYPE_IMAGE:
             node = ImageGenerator()
+        elif nodeType == XN_NODE_TYPE_RECORDER:
+            node = Recorder()
         else:
             node = ProductionNode()
 
