@@ -4,18 +4,18 @@ from Cython.Distutils import build_ext
 
 
 test = Extension("opennipyx.test",
-              sources=["opennipyx/test.pyx", 'cpp_rect.cpp'],
+              sources=["opennipyx/test.pyx", 'opennipyx/cpp_rect.cpp'],
               include_dirs=["."],
+              language="c++")
+
+xn = Extension("opennipyx.xn",
+              sources=['opennipyx/xn.pyx'],
+              include_dirs=[".", '/usr/include/openni'],
               language="c++")
 
 setup(
   name = 'test',
   packages=['opennipyx'],
-  ext_modules=[test
-    # Extension("opennipyx",
-    #           sources=["opennipyx/xn.pyx", 'cpp_rect.cpp'],
-    #           include_dirs=[".", '/usr/include/openni'],
-    #           language="c++"),
-    ],
+  ext_modules=[test, xn],
   cmdclass = {'build_ext': build_ext},
 )
