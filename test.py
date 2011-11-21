@@ -28,4 +28,5 @@ imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 print imageGenerator
 
 while context.WaitAndUpdateAll():
-    print 'update'
+    imd = imageGenerator.GetMetaData()
+    print imd.Res(), imd.FPS()

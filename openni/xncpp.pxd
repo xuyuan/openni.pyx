@@ -48,8 +48,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnUInt32 YRes()
         XnUInt32 FPS()
 
-    CMapMetaData *newMapMetaData "new xn::MapMetaData" ()
-
     void delMapMetaData "delete" (CMapMetaData* data)
 
     ##### ImageMetaData ####
@@ -57,8 +55,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         pass
 
     CImageMetaData *newImageMetaData "new xn::ImageMetaData" ()
-
-    void delImageMetaData "delete" (CImageMetaData* data)
 
     ##### ScriptNode #####
     cdef cppclass CScriptNode "xn::ScriptNode":

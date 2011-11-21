@@ -17,14 +17,26 @@ cdef class Version:
         else:
             raise NotImplemented
 
-cdef class ImageMetaData:
-    cdef CImageMetaData* _this
+cdef class MapMetaData:
+    cdef CMapMetaData* _this
 
-    def __cinit__(self):
-        self._this = newImageMetaData()
+    def __init__(self):
+        """meant to be used by inheriting classes."""
+        raise NotImplemented
 
     def __dealloc__(self):
-        delImageMetaData(self._this)
+        delMapMetaData(self._this)
+
+    def Res(self):
+        return (self._this.XRes(), self._this.YRes())
+
+    def FPS(self):
+        return self._this.FPS()
+
+
+cdef class ImageMetaData(MapMetaData):
+    def __init__(self):
+        self._this = newImageMetaData()    
 
 
 cdef class ScriptNode:
@@ -53,8 +65,9 @@ cdef class ImageGenerator(ProductionNode):
 
     def GetMetaData(self):
         metaData = ImageMetaData()
+        metaDataPtr = <CImageMetaData*>(metaData._this)
         _this = <CImageGenerator*>(self._this)
-        _this.GetMetaData(metaData._this[0])
+        _this.GetMetaData(metaDataPtr[0])
         return metaData
 
 cdef class Context:
