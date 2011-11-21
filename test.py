@@ -16,13 +16,15 @@ assert ret
 scriptNode = context.InitFromXmlFile('BasicColorAndDepth.xml')
 assert scriptNode
 
+depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
-print imageGenerator
+print depthGenerator, imageGenerator
 
 try:
     while context.WaitAndUpdateAll():
+        depth = depthGenerator.GetMetaData()
         image = imageGenerator.GetRGB24ImageMap()
-        # print image
+        print depth.Res(), depth.FPS()
         cv.SetData(cvimage, image.tostring())
         cv.CvtColor(cvimage, cvimage, cv.CV_RGB2BGR)
         cv.ShowImage( "Image Stream", cvimage )

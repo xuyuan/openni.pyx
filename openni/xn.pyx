@@ -4,6 +4,7 @@ cimport numpy as np
 np.import_array()
 
 NODE_TYPE_IMAGE = XN_NODE_TYPE_IMAGE
+NODE_TYPE_DEPTH = XN_NODE_TYPE_DEPTH
 
 cdef class Version:
     cdef CVersion *_this
@@ -46,6 +47,11 @@ cdef class MapMetaData:
         return self._this.FPS()
 
 
+cdef class DepthMetaData(MapMetaData):
+    def __init__(self):
+        self._this = newDepthMetaData()
+
+
 cdef class ImageMetaData(MapMetaData):
     def __init__(self):
         self._this = newImageMetaData()    
@@ -69,6 +75,20 @@ cdef class ProductionNode:
 
     def __dealloc__(self):
         delProductionNode(self._this)
+
+
+cdef class DepthGenerator(ProductionNode):
+
+    def __init__(self):
+        self._this = newDepthGenerator()
+
+    def GetMetaData(self):
+        """Gets the current depth-map meta data."""
+        metaData = DepthMetaData()
+        metaDataPtr = <CDepthMetaData*>(metaData._this)
+        _this = <CDepthGenerator*>(self._this)
+        _this.GetMetaData(metaDataPtr[0])
+        return metaData
 
 cdef class ImageGenerator(ProductionNode):
 
@@ -147,7 +167,9 @@ cdef class Context:
         """
         Returns the first found existing node of the specified type. 
         """
-        if nodeType == XN_NODE_TYPE_IMAGE:
+        if nodeType == XN_NODE_TYPE_DEPTH:
+            node = DepthGenerator()
+        elif nodeType == XN_NODE_TYPE_IMAGE:
             node = ImageGenerator()
         else:
             node = ProductionNode()

@@ -60,7 +60,13 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     void delMapMetaData "delete" (CMapMetaData* data)
 
-    ##### ImageMetaData ####
+    ##### DepthMetaData #####
+    cdef cppclass CDepthMetaData "xn::DepthMetaData" (CMapMetaData):
+        pass
+
+    CDepthMetaData *newDepthMetaData "new xn::DepthMetaData" ()
+
+    ##### ImageMetaData #####
     cdef cppclass CImageMetaData "xn::ImageMetaData" (CMapMetaData):
         pass
 
@@ -81,6 +87,13 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     CProductionNode *newProductionNode "new xn::ProductionNode" ()
 
     void delProductionNode "delete" (CProductionNode *node)
+
+    ##### DepthGenerator #####
+    cdef cppclass CDepthGenerator "xn::DepthGenerator" (CProductionNode):
+        void GetMetaData(CDepthMetaData& metaData)
+        # XnDepthPixel* 	GetDepthMap()
+
+    CDepthGenerator *newDepthGenerator "new xn::DepthGenerator" ()
 
     ##### ImageGenerator ######
     cdef cppclass CImageGenerator "xn::ImageGenerator" (CProductionNode):
