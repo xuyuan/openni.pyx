@@ -18,6 +18,10 @@ cdef class Version:
             raise NotImplemented
 
 cdef class MapMetaData:
+    """
+    Represents a MetaData object for generators producing
+    pixel-map-based outputs 
+    """
     cdef CMapMetaData* _this
 
     def __init__(self):
@@ -28,9 +32,14 @@ cdef class MapMetaData:
         delMapMetaData(self._this)
 
     def Res(self):
+        """
+        Gets the actual resolution of columns in the frame (after
+        cropping)
+        """
         return (self._this.XRes(), self._this.YRes())
 
     def FPS(self):
+        """Gets the FPS in which frame was generated. """
         return self._this.FPS()
 
 
@@ -99,6 +108,24 @@ cdef class Context:
         status = self._this.InitFromXmlFile(s, scriptNode._this[0])
         if status == XN_STATUS_OK:
             return scriptNode
+
+    def Release(self):
+        """
+        Releases a context object, decreasing its ref count by 1. If
+        reference count has reached 0, the context will be destroyed.
+        """
+        self._this.Release()
+
+    def Shutdown(self):
+        """
+        Shuts down an OpenNI context, destroying all its nodes. Do not
+        call any function of this context or any correlated node after
+        calling this method. NOTE: this function destroys the context
+        and all the nodes it holds and so should be used very
+        carefully. Normally you should just call
+        :func:`ContextRelease`.
+        """
+        self._this.Shutdown()
 
     def FindExistingNode(self, XnProductionNodeType nodeType):
         """

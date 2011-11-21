@@ -82,6 +82,8 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     cdef cppclass CContext "xn::Context":
         XnStatus Init()
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
+        void Release()
+        void Shutdown()
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
         XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()
