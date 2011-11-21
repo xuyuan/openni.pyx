@@ -8,6 +8,11 @@ ctypedef char XnChar
 
 ctypedef XnInt32 XnProductionNodeType
 cdef extern from 'XnTypes.h':
+    cdef struct XnRGB24Pixel:
+        XnUInt8 nRed
+        XnUInt8 nGreen
+        XnUInt8 nBlue
+
     enum XnPredefinedProductionNodeType:
         XN_NODE_TYPE_INVALID
         XN_NODE_TYPE_DEVICE
@@ -83,7 +88,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus Init()
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
         void Release()
-        void Shutdown()
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
         XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()

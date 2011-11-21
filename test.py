@@ -22,4 +22,4 @@ try:
         imd = imageGenerator.GetMetaData()
         print imd.Res(), imd.FPS()
 finally:
-    context.Shutdown()
+    context.Release()

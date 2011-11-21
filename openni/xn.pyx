@@ -116,17 +116,6 @@ cdef class Context:
         """
         self._this.Release()
 
-    def Shutdown(self):
-        """
-        Shuts down an OpenNI context, destroying all its nodes. Do not
-        call any function of this context or any correlated node after
-        calling this method. NOTE: this function destroys the context
-        and all the nodes it holds and so should be used very
-        carefully. Normally you should just call
-        :func:`ContextRelease`.
-        """
-        self._this.Shutdown()
-
     def FindExistingNode(self, XnProductionNodeType nodeType):
         """
         Returns the first found existing node of the specified type. 
