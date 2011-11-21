@@ -1,9 +1,11 @@
 from cpython cimport bool  # or from libcpp cimport bool
+cimport numpy as np
+np.import_array()
 
-ctypedef int XnUInt8
-ctypedef int XnUInt16
-ctypedef int XnUInt32
-ctypedef int XnInt32
+ctypedef np.uint8_t XnUInt8
+ctypedef np.uint16_t XnUInt16
+ctypedef np.uint32_t XnUInt32
+ctypedef np.int32_t XnInt32
 ctypedef char XnChar
 
 ctypedef XnInt32 XnProductionNodeType
@@ -12,6 +14,9 @@ cdef extern from 'XnTypes.h':
         XnUInt8 nRed
         XnUInt8 nGreen
         XnUInt8 nBlue
+
+    # define const pointer
+    ctypedef char* XnRGB24PixelConstPtr "const XnRGB24Pixel*"
 
     enum XnPredefinedProductionNodeType:
         XN_NODE_TYPE_INVALID
@@ -80,6 +85,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     ##### ImageGenerator ######
     cdef cppclass CImageGenerator "xn::ImageGenerator" (CProductionNode):
         void GetMetaData(CImageMetaData& metaData)
+        XnRGB24PixelConstPtr GetRGB24ImageMap()
 
     CImageGenerator *newImageGenerator "new xn::ImageGenerator" ()
 

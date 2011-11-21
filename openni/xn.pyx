@@ -1,4 +1,7 @@
 from xncpp cimport *
+import numpy as np
+cimport numpy as np
+np.import_array()
 
 NODE_TYPE_IMAGE = XN_NODE_TYPE_IMAGE
 
@@ -78,6 +81,30 @@ cdef class ImageGenerator(ProductionNode):
         _this = <CImageGenerator*>(self._this)
         _this.GetMetaData(metaDataPtr[0])
         return metaData
+
+    def GetRGB24ImageMap(self):
+        _this = <CImageGenerator*>(self._this)
+        cdef XnRGB24PixelConstPtr pixel
+        pixel = _this.GetRGB24ImageMap()
+        w, h = self.GetMetaData().Res()
+
+        # Create a C array to describe the shape of the ndarray
+        cdef np.npy_intp shape[3]
+        shape[0] = <np.npy_intp>(w)
+        shape[1] = <np.npy_intp>(h)
+        shape[2] = <np.npy_intp>(3)
+
+        # Use the PyArray_SimpleNewFromData function from numpy to create a
+        # new Python object pointing to the existing data
+        ndarray = np.PyArray_SimpleNewFromData(3, shape,
+                                               np.NPY_UINT8, <void *> pixel)
+
+        # Tell Python that it can deallocate the memory when the ndarray
+        # object gets garbage collected
+        # As the OWNDATA flag of an array is read-only in Python, we need to
+        # call the C function PyArray_UpdateFlags
+        np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
+        return ndarray
 
 cdef class Context:
     cdef CContext *_this
