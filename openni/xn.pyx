@@ -7,7 +7,6 @@ __license__ = "MIT"
 __author__ =  "Xu, Yuan"
 __email__ = "xuyuan.cn@gmail.com"
 
-from xncpp cimport *
 import numpy as np
 cimport numpy as np
 np.import_array()
