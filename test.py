@@ -19,7 +19,11 @@ v1 = xn.Version(0, 1, 1, 1)
 
 context = xn.Context()
 ret = context.Init()
-assert ret == xn.XN_STATUS_OK
+assert ret
 
 scriptNode = context.InitFromXmlFile('BasicColorAndDepth.xml')
 assert scriptNode
+
+imageGenerator = context.FindExistingNode(xn.XN_NODE_TYPE_IMAGE)
+print imageGenerator
+
