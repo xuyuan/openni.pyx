@@ -13,6 +13,7 @@ np.import_array()
 
 NODE_TYPE_IMAGE = XN_NODE_TYPE_IMAGE
 NODE_TYPE_DEPTH = XN_NODE_TYPE_DEPTH
+NODE_TYPE_SCENE = XN_NODE_TYPE_SCENE
 NODE_TYPE_RECORDER = XN_NODE_TYPE_RECORDER
 
 RECORD_MEDIUM_FILE = XN_RECORD_MEDIUM_FILE
@@ -23,6 +24,18 @@ CODEC_JPEG = XN_CODEC_JPEG
 CODEC_16Z = XN_CODEC_16Z
 CODEC_16Z_EMB_TABLES = XN_CODEC_16Z_EMB_TABLES
 CODEC_8Z = XN_CODEC_8Z
+
+cdef raw2array(void* data, int ndim, np.npy_intp* shape, dtype):
+    # Use the PyArray_SimpleNewFromData function from numpy to create a
+    # new Python object pointing to the existing data
+    ndarray = np.PyArray_SimpleNewFromData(ndim, shape, dtype, data)
+
+    # Tell Python that it can deallocate the memory when the ndarray
+    # object gets garbage collected
+    # As the OWNDATA flag of an array is read-only in Python, we need to
+    # call the C function PyArray_UpdateFlags
+    np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
+    return ndarray
 
 cdef class Version:
     cdef CVersion *_this
@@ -64,16 +77,17 @@ cdef class MapMetaData:
         """Gets the FPS in which frame was generated. """
         return self._this.FPS()
 
-
 cdef class DepthMetaData(MapMetaData):
     def __init__(self):
         self._this = newDepthMetaData()
-
 
 cdef class ImageMetaData(MapMetaData):
     def __init__(self):
         self._this = newImageMetaData()    
 
+cdef class SceneMetaData(MapMetaData):
+    def __init__(self):
+        self._this = newSceneMetaData()
 
 cdef class ScriptNode:
     cdef CScriptNode* _this
@@ -121,12 +135,7 @@ cdef class DepthGenerator(ProductionNode):
         shape[0] = <np.npy_intp>(h)
         shape[1] = <np.npy_intp>(w)
 
-        ndarray = np.PyArray_SimpleNewFromData(2, shape,
-                                               np.NPY_UINT16,
-                                               <void*> pixel)
-
-        np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
-        return ndarray
+        return raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
 
     def ConvertDepthMapToProjective(self, np.ndarray[np.uint16_t, ndim=2] pixel not None):
         """
@@ -194,17 +203,42 @@ cdef class ImageGenerator(ProductionNode):
         shape[1] = <np.npy_intp>(w)
         shape[2] = <np.npy_intp>(3)
 
-        # Use the PyArray_SimpleNewFromData function from numpy to create a
-        # new Python object pointing to the existing data
-        ndarray = np.PyArray_SimpleNewFromData(3, shape,
-                                               np.NPY_UINT8, <void *> pixel)
+        return raw2array(<void*>pixel, 3, shape, np.NPY_UINT8)
 
-        # Tell Python that it can deallocate the memory when the ndarray
-        # object gets garbage collected
-        # As the OWNDATA flag of an array is read-only in Python, we need to
-        # call the C function PyArray_UpdateFlags
-        np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
-        return ndarray
+cdef class SceneAnalyzer(ProductionNode):
+    """
+    A map generator that gets raw sensory data and generates a map
+    with labels that clarify the scene.
+    """
+    def __init__(self):
+            self._this = newSceneAnalyzer()
+
+    def GetMetaData(self):
+        metaData = SceneMetaData()
+        metaDataPtr = <CSceneMetaData*>(metaData._this)
+        this = <CSceneAnalyzer*>(self._this)
+        this.GetMetaData(metaDataPtr[0])
+        return metaData
+
+    def GetLabelMap(self):
+        this = <CSceneAnalyzer*>(self._this)
+        cdef XnLabelConstPtr pixel
+        pixel = this.GetLabelMap()
+        w, h = self.GetMetaData().Res()
+
+        # Create a C array to describe the shape of the ndarray
+        cdef np.npy_intp shape[2]
+        shape[0] = <np.npy_intp>(h)
+        shape[1] = <np.npy_intp>(w)
+
+        return raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
+
+    def GetFloor(self):
+        cdef XnPlane3D plane
+        this = <CSceneAnalyzer*>(self._this)
+        this.GetFloor(plane)
+        return ([plane.ptPoint.X, plane.ptPoint.Y, plane.ptPoint.Z],
+                [plane.vNormal.X, plane.vNormal.Y, plane.vNormal.Z])
 
 cdef class Recorder(ProductionNode):
     """
@@ -323,6 +357,8 @@ cdef class Context:
             node = DepthGenerator()
         elif nodeType == XN_NODE_TYPE_IMAGE:
             node = ImageGenerator()
+        elif nodeType == XN_NODE_TYPE_SCENE:
+            node = SceneAnalyzer()
         elif nodeType == XN_NODE_TYPE_RECORDER:
             node = Recorder()
         else:

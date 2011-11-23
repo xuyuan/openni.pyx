@@ -29,6 +29,9 @@ cdef extern from 'XnTypes.h':
     ctypedef XnUInt16 XnDepthPixel
     ctypedef char* XnDepthPixelConstPtr "const XnDepthPixel*"
 
+    ctypedef XnUInt16 XnLabel
+    ctypedef char* XnLabelConstPtr "const XnLabel*"
+
     enum XnPredefinedProductionNodeType:
         XN_NODE_TYPE_INVALID
         XN_NODE_TYPE_DEVICE
@@ -51,6 +54,10 @@ cdef extern from 'XnTypes.h':
 
     enum XnRecordMedium:
         XN_RECORD_MEDIUM_FILE
+
+    struct XnPlane3D:
+        XnVector3D vNormal
+        XnPoint3D ptPoint
 
 ctypedef XnUInt32 XnCodecID
 
@@ -98,6 +105,12 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     CImageMetaData *newImageMetaData "new xn::ImageMetaData" ()
 
+    ##### SceneMetaData #####
+    cdef cppclass CSceneMetaData "xn::SceneMetaData" (CMapMetaData):
+        pass
+
+    CSceneMetaData *newSceneMetaData "new xn::SceneMetaData" ()
+
     ##### ScriptNode #####
     cdef cppclass CScriptNode "xn::ScriptNode":
         pass
@@ -131,6 +144,14 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     CImageGenerator *newImageGenerator "new xn::ImageGenerator" ()
 
+    ##### SceneAnalyzer #####
+    cdef cppclass CSceneAnalyzer "xn::SceneAnalyzer" (CProductionNode):
+        void GetMetaData(CSceneMetaData &metaData)
+        XnLabelConstPtr GetLabelMap()
+        XnStatus GetFloor(XnPlane3D& Plane)
+
+    CSceneAnalyzer *newSceneAnalyzer "new xn::SceneAnalyzer" ()
+
     ##### Recorder #####
     cdef cppclass CRecorder "xn::Recorder" (CProductionNode):
         XnStatus SetDestination(XnRecordMedium destType, XnChar *strDest)	
@@ -146,7 +167,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
         XnStatus OpenFileRecording(XnChar* strFileName, CProductionNode& playerNode)
-
         XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()
 

@@ -6,6 +6,7 @@ import cv
 
 cvimage = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_8U, 3 )
 cvdepth = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
+cvlabel = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 
 # v1 = xn.Version(0, 1, 1, 1)
 # v2 = xn.Version(0, 1, 1, 1)
@@ -19,6 +20,8 @@ assert scriptNode
 depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 # recorder = context.FindExistingNode(xn.NODE_TYPE_RECORDER)
+sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
+print sceneAnalyzer
 
 try:
     while context.WaitAndUpdateAll():
@@ -32,6 +35,12 @@ try:
             cv.SetData(cvimage, image.tostring())
             cv.CvtColor(cvimage, cvimage, cv.CV_RGB2BGR)
             cv.ShowImage("Image Stream", cvimage)
+
+        if sceneAnalyzer:
+            label = sceneAnalyzer.GetLabelMap()
+            label[label.nonzero()] = 2 ** 15
+            cv.SetData(cvlabel, label.tostring())
+            cv.ShowImage("Label", cvlabel)
 
         key = cv.WaitKey(30)  
         if key == 27:
