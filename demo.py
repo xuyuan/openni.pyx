@@ -21,7 +21,6 @@ depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 # recorder = context.FindExistingNode(xn.NODE_TYPE_RECORDER)
 sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
-print sceneAnalyzer
 
 try:
     while context.WaitAndUpdateAll():
@@ -42,7 +41,7 @@ try:
             cv.SetData(cvlabel, label.tostring())
             cv.ShowImage("Label", cvlabel)
 
-        key = cv.WaitKey(30)  
+        key = cv.WaitKey(10)  
         if key == 27:
             break
 finally:
@@ -51,4 +50,6 @@ finally:
     del scriptNode
     del depthGenerator
     del imageGenerator
+    del sceneAnalyzer
+
 

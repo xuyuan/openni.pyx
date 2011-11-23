@@ -30,12 +30,8 @@ cdef raw2array(void* data, int ndim, np.npy_intp* shape, dtype):
     # new Python object pointing to the existing data
     ndarray = np.PyArray_SimpleNewFromData(ndim, shape, dtype, data)
 
-    # Tell Python that it can deallocate the memory when the ndarray
-    # object gets garbage collected
-    # As the OWNDATA flag of an array is read-only in Python, we need to
-    # call the C function PyArray_UpdateFlags
-    np.PyArray_UpdateFlags(ndarray, ndarray.flags.num | np.NPY_OWNDATA)
-    return ndarray
+    # copy the data, since this data belongs to OpenNI interally
+    return np.PyArray_NewCopy(ndarray, np.NPY_ANYORDER)
 
 cdef class Version:
     cdef CVersion *_this
@@ -383,5 +379,6 @@ cdef class Context:
         Updates all generators nodes in the context, waiting for all
         to have new data.
         """
-        status = self._this.WaitAndUpdateAll()
+        with nogil:
+            status = self._this.WaitAndUpdateAll()
         return status == XN_STATUS_OK
