@@ -95,19 +95,19 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     ##### DepthMetaData #####
     cdef cppclass CDepthMetaData "xn::DepthMetaData" (CMapMetaData):
-        pass
+        XnDepthPixelConstPtr Data()
 
     CDepthMetaData *newDepthMetaData "new xn::DepthMetaData" ()
 
     ##### ImageMetaData #####
     cdef cppclass CImageMetaData "xn::ImageMetaData" (CMapMetaData):
-        pass
+        XnRGB24PixelConstPtr RGB24Data()
 
     CImageMetaData *newImageMetaData "new xn::ImageMetaData" ()
 
     ##### SceneMetaData #####
     cdef cppclass CSceneMetaData "xn::SceneMetaData" (CMapMetaData):
-        pass
+        XnLabelConstPtr Data() 	
 
     CSceneMetaData *newSceneMetaData "new xn::SceneMetaData" ()
 

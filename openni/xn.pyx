@@ -77,13 +77,53 @@ cdef class DepthMetaData(MapMetaData):
     def __init__(self):
         self._this = newDepthMetaData()
 
+    def Data(self):
+        """
+        .. warning: this is the data pointing to OpenNI interal data
+        """
+        this = <CDepthMetaData*>(self._this)
+        cdef np.npy_intp shape[2]
+        shape[0] = <np.npy_intp>(this.XRes())
+        shape[1] = <np.npy_intp>(this.YRes())
+        data = this.Data()
+
+        return np.PyArray_SimpleNewFromData(2, shape,
+                                            np.NPY_UINT16, <void*>data)
+
 cdef class ImageMetaData(MapMetaData):
     def __init__(self):
-        self._this = newImageMetaData()    
+        self._this = newImageMetaData()
+
+    def RGB24Data(self):
+        """
+        .. warning: this is the data pointing to OpenNI interal data
+        """
+        this = <CImageMetaData*>(self._this)
+        cdef np.npy_intp shape[3]
+        shape[0] = <np.npy_intp>(this.XRes())
+        shape[1] = <np.npy_intp>(this.YRes())
+        shape[2] = <np.npy_intp>(3)
+        data = this.RGB24Data()
+
+        return np.PyArray_SimpleNewFromData(3, shape,
+                                            np.NPY_UINT8, <void*>data)
 
 cdef class SceneMetaData(MapMetaData):
     def __init__(self):
         self._this = newSceneMetaData()
+
+    def Data(self):
+        """
+        .. warning: this is the data pointing to OpenNI interal data
+        """
+        this = <CSceneMetaData*>(self._this)
+        cdef np.npy_intp shape[2]
+        shape[0] = <np.npy_intp>(this.XRes())
+        shape[1] = <np.npy_intp>(this.YRes())
+        data = this.Data()
+
+        return np.PyArray_SimpleNewFromData(2, shape,
+                                            np.NPY_UINT16, <void*>data)
 
 cdef class ScriptNode:
     cdef CScriptNode* _this
