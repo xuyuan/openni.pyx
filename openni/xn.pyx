@@ -1,6 +1,6 @@
 """
-Cython wrapper for namespace xn of OpenNI
-=========================================
+Python binding of namespace xn in OpenNI
+========================================
 """
 
 __license__ = "MIT"
@@ -524,7 +524,7 @@ cdef class Recorder(ProductionNode):
         :param destType: The type of medium to record to. Currently
             only RECORD_MEDIUM_FILE is supported
 
-         :param strDest: Recording destination. If destType is
+        :param strDest: Recording destination. If destType is
             RECORD_MEDIUM_FILE, this specifies a file name.
         """
         this = <CRecorder*>(self._this)
@@ -542,8 +542,9 @@ cdef class Recorder(ProductionNode):
         :param node: The node to add to the recording.
 
         :param compression: The type of compression that will be used
-        to encode the node's data. If CODEC_NULL is specified, a
-        default compression will be chosen according to the node type.
+            to encode the node's data. If CODEC_NULL is specified, a
+            default compression will be chosen according to the node
+            type.
         """
         this = <CRecorder*>(self._this)
         nodePtr = <CProductionNode*>(node._this)

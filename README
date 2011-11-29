@@ -1,8 +1,16 @@
-========================
-Cython wrapper of OpenNI
-========================
+==========================================
+Python binding of OpenNI (based on Cython)
+==========================================
 
 License: MIT
 Copyright (c) 2011 Xu, Yuan <xuyuan.cn@gmail.com>
 
-TODO:...
+Documentation
+=============
+    *
+
+Demo
+====
+
+    * demo.py
+    * demo-player.py
