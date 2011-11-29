@@ -379,6 +379,37 @@ cdef class Player(ProductionNode):
         assert status == XN_STATUS_OK
         return pnFrames
 
+    def SetRepeat(self, bRepeat):
+        """
+        Determines whether the player will automatically rewind to the
+        beginning of the recording when reaching the end.
+        """
+        this = <CPlayer*>(self._this)
+        status = this.SetRepeat(bRepeat)
+        assert status == XN_STATUS_OK
+
+    def ReadNext(self):
+        """
+        Reads the next data element from the player.
+        """
+        this = <CPlayer*>(self._this)
+        status = this.ReadNext()
+        return status == XN_STATUS_OK
+
+    def SetPlaybackSpeed(self, dSpeed):
+        """
+        Sets the playback speed, as a ratio of the time passed in the
+        recording. A value of 1.0 means the player will try to output
+        frames in the rate they were recorded (according to their
+        timestamps). A value bigger than 1.0 means fast-forward, and a
+        value between 0.0 and 1.0 means slow-motion. The special value
+        of 0.0 means there will be no delay, and that frames will be
+        returned as soon as asked for.
+        """
+        this = <CPlayer*>(self._this)
+        status = this.SetPlaybackSpeed(dSpeed)
+        return status == XN_STATUS_OK
+
 cdef class Context:
     """
     The context is the main object in OpenNI. A context is an object

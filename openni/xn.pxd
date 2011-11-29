@@ -2,12 +2,14 @@ from cpython cimport bool  # or from libcpp cimport bool
 cimport numpy as np
 np.import_array()
 
+ctypedef np.uint32_t XnBool
 ctypedef np.uint8_t XnUInt8
 ctypedef np.uint16_t XnUInt16
 ctypedef np.uint32_t XnUInt32
 ctypedef np.int32_t XnInt32
 ctypedef char XnChar
 ctypedef float XnFloat
+ctypedef double XnDouble
 
 ctypedef XnInt32 XnProductionNodeType
 cdef extern from 'XnTypes.h':
@@ -165,7 +167,10 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     ##### Player #####
     cdef cppclass CPlayer "xn::Player" (CProductionNode):
-        XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32 & nFrames) 
+        XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32 & nFrames)
+        XnStatus SetRepeat(XnBool bRepeat)
+        XnStatus ReadNext()
+        XnStatus SetPlaybackSpeed(XnDouble dSpeed) 
 
     CPlayer* newPlayer "new xn::Player" ()
 
