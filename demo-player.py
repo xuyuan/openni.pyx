@@ -35,6 +35,8 @@ if imageGenerator:
     print imageName, 'num frames:', player.GetNumFrames(imageName)
 print '-' * 30
 
+singleStep = False
+
 try:
     while not player.IsEOF():
         # if not player.ReadNext():
@@ -63,12 +65,22 @@ try:
             cv.SetData(cvlabel, label.tostring())
             cv.ShowImage("Label", cvlabel)
 
-        key = cv.WaitKey(10)  
+        if singleStep:
+            key = cv.WaitKey(0)
+        else:
+            key = cv.WaitKey(10)
+
         if key == 27:
             break
+        elif key == 44:
+            print 'one frame back'
+            player.SeekToFrame(imageGenerator.GetName(), -1, xn.Player.SEEK_CUR)
         elif key == 98:
             print 'jump to begining'
             player.SeekToFrame(imageGenerator.GetName(), 0, xn.Player.SEEK_SET)
+        elif key == 115:
+            singleStep = not singleStep
+            print 'set singleStep to', singleStep
         elif key != -1:
             print key, 'pressed'
 finally:
