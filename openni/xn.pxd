@@ -111,14 +111,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     CSceneMetaData *newSceneMetaData "new xn::SceneMetaData" ()
 
-    ##### ScriptNode #####
-    cdef cppclass CScriptNode "xn::ScriptNode":
-        pass
-
-    CScriptNode *newScriptNode "new xn::ScriptNode" ()
-
-    void delScriptNode "delete" (CScriptNode *node)
-
     ##### ProductionNode #####
     cdef cppclass CProductionNode "xn::ProductionNode":
         pass
@@ -126,6 +118,12 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     CProductionNode *newProductionNode "new xn::ProductionNode" ()
 
     void delProductionNode "delete" (CProductionNode *node)
+
+    ##### ScriptNode #####
+    cdef cppclass CScriptNode "xn::ScriptNode" (CProductionNode):
+        pass
+
+    CScriptNode *newScriptNode "new xn::ScriptNode" ()
 
     ##### DepthGenerator #####
     cdef cppclass CDepthGenerator "xn::DepthGenerator" (CProductionNode):

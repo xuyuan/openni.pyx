@@ -25,7 +25,7 @@ CODEC_16Z = XN_CODEC_16Z
 CODEC_16Z_EMB_TABLES = XN_CODEC_16Z_EMB_TABLES
 CODEC_8Z = XN_CODEC_8Z
 
-cdef raw2array(void* data, int ndim, np.npy_intp* shape, dtype):
+cdef _raw2array(void* data, int ndim, np.npy_intp* shape, dtype):
     # Use the PyArray_SimpleNewFromData function from numpy to create a
     # new Python object pointing to the existing data
     ndarray = np.PyArray_SimpleNewFromData(ndim, shape, dtype, data)
@@ -125,15 +125,6 @@ cdef class SceneMetaData(MapMetaData):
         return np.PyArray_SimpleNewFromData(2, shape,
                                             np.NPY_UINT16, <void*>data)
 
-cdef class ScriptNode:
-    cdef CScriptNode* _this
-
-    def __cinit__(self):
-        self._this = newScriptNode()
-
-    def __dealloc__(self):
-        delScriptNode(self._this)
-
 cdef class ProductionNode:
     cdef CProductionNode* _this
 
@@ -143,6 +134,10 @@ cdef class ProductionNode:
     def __dealloc__(self):
         delProductionNode(self._this)
 
+cdef class ScriptNode(ProductionNode):
+
+    def __init__(self):
+        self._this = newScriptNode()
 
 cdef class DepthGenerator(ProductionNode):
 
@@ -171,7 +166,7 @@ cdef class DepthGenerator(ProductionNode):
         shape[0] = <np.npy_intp>(h)
         shape[1] = <np.npy_intp>(w)
 
-        return raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
+        return _raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
 
     def ConvertDepthMapToProjective(self, np.ndarray[np.uint16_t, ndim=2] pixel not None):
         """
@@ -239,7 +234,7 @@ cdef class ImageGenerator(ProductionNode):
         shape[1] = <np.npy_intp>(w)
         shape[2] = <np.npy_intp>(3)
 
-        return raw2array(<void*>pixel, 3, shape, np.NPY_UINT8)
+        return _raw2array(<void*>pixel, 3, shape, np.NPY_UINT8)
 
 cdef class SceneAnalyzer(ProductionNode):
     """
@@ -267,7 +262,7 @@ cdef class SceneAnalyzer(ProductionNode):
         shape[0] = <np.npy_intp>(h)
         shape[1] = <np.npy_intp>(w)
 
-        return raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
+        return _raw2array(<void*>pixel, 2, shape, np.NPY_UINT16)
 
     def GetFloor(self):
         cdef XnPlane3D plane
@@ -381,7 +376,8 @@ cdef class Context:
         """
         cdef char* s = strFileName
         scriptNode = ScriptNode()
-        status = self._this.InitFromXmlFile(s, scriptNode._this[0])
+        scriptnodeptr = <CScriptNode*>(scriptNode._this)
+        status = self._this.InitFromXmlFile(s, scriptnodeptr[0])
         if status == XN_STATUS_OK:
             return scriptNode
 
