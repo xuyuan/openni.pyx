@@ -8,6 +8,7 @@ ctypedef np.uint16_t XnUInt16
 ctypedef np.uint32_t XnUInt32
 ctypedef long long unsigned int XnUInt64
 ctypedef np.int32_t XnInt32
+ctypedef long long int XnInt64
 ctypedef char XnChar
 ctypedef float XnFloat
 ctypedef double XnDouble
@@ -182,6 +183,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus TellFrame(XnChar* strNodeName, XnUInt32& nFrame)
         XnStatus TellTimestamp(XnUInt64& nTimestamp)
         XnStatus SeekToFrame(XnChar* strNodeName, XnInt32 nFrameOffset, XnPlayerSeekOrigin origin)
+        XnStatus SeekToTimeStamp(XnInt64 nTimeOffset, XnPlayerSeekOrigin origin)
 
     CPlayer* newPlayer "new xn::Player" ()
 

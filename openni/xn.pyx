@@ -458,6 +458,41 @@ cdef class Player(ProductionNode):
         return this.IsEOF() != 0
 
     def SeekToFrame(self, strNodeName, nFrameOffset, origin):
+        """
+        Seeks the player to a specific frame of a specific played
+        node, so that playing will continue from that frame onwards.
+
+        :param strNodeName: The name of the node whose frame is to be
+            sought.
+
+        :param nFrameOffset: The number of frames to move, relative to
+            the specified origin. See the remark below.
+
+        :param origin: The origin to seek from. See the note below.
+
+        .. note::
+
+            The meaning of the nTimeOffset parameter changes according
+            to the origin parameter:
+
+            +----------+---------------------------------------------+
+            | origin   | Meaning of the nFrameOffset parameter       |
+            +==========+=============================================+
+            |          | nFrameOffset specifies the total number of  |
+            | SEEK_SET | frames since the beginning of the node's    |
+            |          | recording.                                  |
+            +----------+---------------------------------------------+
+            |          | nFrameOffset specifies the number of frames |
+            |          | to move, relative to the current frame of   |
+            | SEEK_CUR | the specifies node. A positive value means  |
+            |          | move forward, and a negative value means    |
+            |          | move backwards.                             |
+            +----------+---------------------------------------------+
+            |          | nFrameOffset specifies the number of frames |
+            | SEEK_END | to move, relative to the end of the node's  |
+            |          | recording. This must be a negative value.   |
+            +----------+---------------------------------------------+
+        """
         this = <CPlayer*>(self._this)
         cdef char* s = strNodeName
         status = this.SeekToFrame(s, nFrameOffset, origin)
