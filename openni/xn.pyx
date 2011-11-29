@@ -410,6 +410,18 @@ cdef class Player(ProductionNode):
         status = this.SetPlaybackSpeed(dSpeed)
         return status == XN_STATUS_OK
 
+    def TellFrame(self, strNodeName):
+        """
+        Reports the current frame number of a specific node played by
+        a player.
+        """
+        this = <CPlayer*>(self._this)
+        cdef char* s = strNodeName
+        cdef XnUInt32 nFrame
+        status = this.TellFrame(s, nFrame)
+        assert status == XN_STATUS_OK
+        return nFrame
+
 cdef class Context:
     """
     The context is the main object in OpenNI. A context is an object

@@ -167,10 +167,11 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     ##### Player #####
     cdef cppclass CPlayer "xn::Player" (CProductionNode):
-        XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32 & nFrames)
+        XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32& nFrames)
         XnStatus SetRepeat(XnBool bRepeat)
         XnStatus ReadNext()
-        XnStatus SetPlaybackSpeed(XnDouble dSpeed) 
+        XnStatus SetPlaybackSpeed(XnDouble dSpeed)
+        XnStatus TellFrame(XnChar* strNodeName, XnUInt32& nFrame)
 
     CPlayer* newPlayer "new xn::Player" ()
 
