@@ -2,10 +2,11 @@ from cpython cimport bool  # or from libcpp cimport bool
 cimport numpy as np
 np.import_array()
 
-ctypedef np.uint32_t XnBool
+ctypedef unsigned int XnBool
 ctypedef np.uint8_t XnUInt8
 ctypedef np.uint16_t XnUInt16
 ctypedef np.uint32_t XnUInt32
+ctypedef long long unsigned int XnUInt64
 ctypedef np.int32_t XnInt32
 ctypedef char XnChar
 ctypedef float XnFloat
@@ -172,6 +173,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus ReadNext()
         XnStatus SetPlaybackSpeed(XnDouble dSpeed)
         XnStatus TellFrame(XnChar* strNodeName, XnUInt32& nFrame)
+        XnStatus TellTimestamp(XnUInt64& nTimestamp)
 
     CPlayer* newPlayer "new xn::Player" ()
 

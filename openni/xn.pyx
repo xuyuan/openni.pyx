@@ -422,6 +422,19 @@ cdef class Player(ProductionNode):
         assert status == XN_STATUS_OK
         return nFrame
 
+    def TellTimestamp(self):
+        """
+        Reports the current timestamp of a player, i.e. the amount of
+        time passed since the beginning of the recording.
+
+        :return: timestamp in microseconds.
+        """
+        this = <CPlayer*>(self._this)
+        cdef XnUInt64 nTimestamp
+        status = this.TellTimestamp(nTimestamp)
+        assert status == XN_STATUS_OK
+        return nTimestamp
+
 cdef class Context:
     """
     The context is the main object in OpenNI. A context is an object

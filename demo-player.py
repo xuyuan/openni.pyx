@@ -41,12 +41,13 @@ try:
 
         if not context.WaitAndUpdateAll():
             break
+        print 'timestamp:', player.TellTimestamp()
 
         if depthGenerator:
             depth = depthGenerator.GetDepthMap()
             cv.SetData(cvdepth, depth.tostring())
             cv.ShowImage("Depth Stream", cvdepth)
-            print 'depth frame:', player.TellFrame(depthGenerator.GetName())
+            # print 'depth frame:', player.TellFrame(depthGenerator.GetName())
 
         if imageGenerator:
             image = imageGenerator.GetRGB24ImageMap()
