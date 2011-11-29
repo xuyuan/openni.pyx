@@ -361,6 +361,9 @@ cdef class Recorder(ProductionNode):
 
 cdef class Player(ProductionNode):
     """Reads data from a recording and plays it"""
+    SEEK_SET = XN_PLAYER_SEEK_SET
+    SEEK_CUR = XN_PLAYER_SEEK_CUR
+    SEEK_END = XN_PLAYER_SEEK_END
     def __init__(self):
         self._this = newPlayer()
 
@@ -453,6 +456,12 @@ cdef class Player(ProductionNode):
         """
         this = <CPlayer*>(self._this)
         return this.IsEOF() != 0
+
+    def SeekToFrame(self, strNodeName, nFrameOffset, origin):
+        this = <CPlayer*>(self._this)
+        cdef char* s = strNodeName
+        status = this.SeekToFrame(s, nFrameOffset, origin)
+        assert status == XN_STATUS_OK
 
 cdef class Context:
     """

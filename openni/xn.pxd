@@ -62,6 +62,11 @@ cdef extern from 'XnTypes.h':
         XnVector3D vNormal
         XnPoint3D ptPoint
 
+    enum XnPlayerSeekOrigin:
+        XN_PLAYER_SEEK_SET
+        XN_PLAYER_SEEK_CUR
+        XN_PLAYER_SEEK_END
+
 ctypedef XnUInt32 XnCodecID
 
 cdef extern from "XnCodecIDs.h":
@@ -176,6 +181,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnDouble GetPlaybackSpeed()
         XnStatus TellFrame(XnChar* strNodeName, XnUInt32& nFrame)
         XnStatus TellTimestamp(XnUInt64& nTimestamp)
+        XnStatus SeekToFrame(XnChar* strNodeName, XnInt32 nFrameOffset, XnPlayerSeekOrigin origin)
 
     CPlayer* newPlayer "new xn::Player" ()
 

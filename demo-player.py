@@ -42,7 +42,8 @@ try:
 
         if not context.WaitAndUpdateAll():
             break
-        print 'timestamp:', player.TellTimestamp()
+
+        # print 'timestamp:', player.TellTimestamp()
 
         if depthGenerator:
             depth = depthGenerator.GetDepthMap()
@@ -65,6 +66,11 @@ try:
         key = cv.WaitKey(10)  
         if key == 27:
             break
+        elif key == 98:
+            print 'jump to begining'
+            player.SeekToFrame(imageGenerator.GetName(), 0, xn.Player.SEEK_SET)
+        elif key != -1:
+            print key, 'pressed'
 finally:
     # release all rescourses
     del context
