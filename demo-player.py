@@ -8,15 +8,11 @@ cvimage = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_8U, 3 )
 cvdepth = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 cvlabel = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 
-# v1 = xn.Version(0, 1, 1, 1)
-# v2 = xn.Version(0, 1, 1, 1)
-# print v1 == v2
-
 context = xn.Context()
 
-node = context.InitFromXmlFile('demo.xml')
-# node = context.OpenFileRecording('capture.oni')
-assert node
+player = context.OpenFileRecording('capture.oni')
+assert player
+assert isinstance(player, xn.Player)
 
 depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
 imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
@@ -24,8 +20,27 @@ imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
 sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
 
 
+# set player
+player.SetRepeat(True)
+player.SetPlaybackSpeed(0)
+
+
+print '-'*10, 'Player', '-'*10
+if depthGenerator:
+    depthName = depthGenerator.GetName()
+    print depthName, 'num frames:', player.GetNumFrames(depthName)
+if imageGenerator:
+    imageName = imageGenerator.GetName()
+    print imageName, 'num frames:', player.GetNumFrames(imageName)
+print '-' * 30
+
 try:
-    while context.WaitAndUpdateAll():
+    while True:
+        # if not player.ReadNext():
+            # break
+
+        if not context.WaitAndUpdateAll():
+            break
 
         if depthGenerator:
             depth = depthGenerator.GetDepthMap()
@@ -50,7 +65,7 @@ try:
 finally:
     # release all rescourses
     del context
-    del node
+    del player
     del depthGenerator
     del imageGenerator
     del sceneAnalyzer
