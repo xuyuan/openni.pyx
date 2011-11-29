@@ -14,11 +14,15 @@ player = context.OpenFileRecording('capture.oni')
 assert player
 assert isinstance(player, xn.Player)
 
-depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
-imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
-# recorder = context.FindExistingNode(xn.NODE_TYPE_RECORDER)
-sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
+depthGenerator = context.FindExistingNode(xn.Node.TYPE_DEPTH)
+imageGenerator = context.FindExistingNode(xn.Node.TYPE_IMAGE)
+sceneAnalyzer = context.FindExistingNode(xn.Node.TYPE_SCENE)
 
+# create a recorder
+# recorder = xn.Recorder(context)
+# recorder.SetDestination(recorder.MEDIUM_FILE, "test.oni")
+# recorder.AddNodeToRecording(depthGenerator)
+# recorder.AddNodeToRecording(imageGenerator)
 
 # set player
 player.SetRepeat(False)

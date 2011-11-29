@@ -11,13 +11,6 @@ import numpy as np
 cimport numpy as np
 np.import_array()
 
-NODE_TYPE_IMAGE = XN_NODE_TYPE_IMAGE
-NODE_TYPE_DEPTH = XN_NODE_TYPE_DEPTH
-NODE_TYPE_SCENE = XN_NODE_TYPE_SCENE
-NODE_TYPE_RECORDER = XN_NODE_TYPE_RECORDER
-
-RECORD_MEDIUM_FILE = XN_RECORD_MEDIUM_FILE
-
 CODEC_NULL = XN_CODEC_NULL
 CODEC_UNCOMPRESSED = XN_CODEC_UNCOMPRESSED
 CODEC_JPEG = XN_CODEC_JPEG
@@ -127,6 +120,11 @@ cdef class SceneMetaData(MapMetaData):
 
 cdef class Node:
     """Base class for all node"""
+    TYPE_IMAGE = XN_NODE_TYPE_IMAGE
+    TYPE_DEPTH = XN_NODE_TYPE_DEPTH
+    TYPE_SCENE = XN_NODE_TYPE_SCENE
+    TYPE_RECORDER = XN_NODE_TYPE_RECORDER
+
     cdef CNodeWrapper* _this
 
     def __init__(self):
@@ -283,81 +281,6 @@ cdef class SceneAnalyzer(ProductionNode):
         this.GetFloor(plane)
         return ([plane.ptPoint.X, plane.ptPoint.Y, plane.ptPoint.Z],
                 [plane.vNormal.X, plane.vNormal.Y, plane.vNormal.Z])
-
-cdef class Recorder(ProductionNode):
-    """
-    To record, an application should create a Recorder node, and set
-    its destination (the file name to which it should write). The
-    application should then add to the recorder node, every node it
-    wants to record. When adding a node to the recorder, the recorder
-    reads its configuration and records it. It also registers to every
-    possible event of the node, so that when any configuration change
-    takes place, it is also recorded.
-
-    Once all required nodes are added, the application can read data
-    from the nodes and record it. Recording of data can be achieved
-    either by explicitly calling the xn::Recorder::Record() function,
-    or by using one of the UpdateAll functions (see Reading Data).
-
-    Applications that initialize OpenNI using an XML file can easily
-    record their session without any change to the code. All that is
-    required is that they create an additional node in the XML file
-    for the recorder, add nodes to it, and when the application calls
-    one of the UpdateAll functions, recording will occur.
-    """
-    def __init__(self):
-        self._this = newRecorder()
-
-    def SetDestination(self, destType, strDest):
-        """
-        Tells the recorder where to record.
-
-        :param destType: The type of medium to record to. Currently
-            only RECORD_MEDIUM_FILE is supported
-
-         :param strDest: Recording destination. If destType is
-            RECORD_MEDIUM_FILE, this specifies a file name.
-        """
-        this = <CRecorder*>(self._this)
-        cdef char* s = strDest
-        status = this.SetDestination(destType, s)
-        assert status == XN_STATUS_OK
-        
-
-    def AddNodeToRecording(self, ProductionNode node, compression=CODEC_NULL):
-        """
-        Adds a node to recording and start recording it. This function
-        must be called on each node that is to be recorded with this
-        recorder.
-
-        :param node: The node to add to the recording.
-
-        :param compression: The type of compression that will be used
-        to encode the node's data. If CODEC_NULL is specified, a
-        default compression will be chosen according to the node type.
-        """
-        this = <CRecorder*>(self._this)
-        nodePtr = <CProductionNode*>(node._this)
-        status = this.AddNodeToRecording(nodePtr[0], compression)
-        assert status == XN_STATUS_OK
-
-    def RemoveNodeFromRecording(self, ProductionNode node):
-        """
-        Removes node from recording and stop recording it.
-        """
-        this = <CRecorder*>(self._this)
-        nodePtr = <CProductionNode*>(node._this)
-        status = this.RemoveNodeFromRecording(nodePtr[0])
-        assert status == XN_STATUS_OK
-
-    def Record(self):
-        """
-        Records one frame of data from each node that was added to the
-        recorder with xnAddNodeToRecording.
-        """
-        this = <CRecorder*>(self._this)
-        status = this.Record()
-        assert status == XN_STATUS_OK
 
 cdef class Player(ProductionNode):
     """Reads data from a recording and plays it"""
@@ -564,3 +487,83 @@ cdef class Context:
         """
         status = self._this.WaitAndUpdateAll()
         return status == XN_STATUS_OK
+
+cdef class Recorder(ProductionNode):
+    """
+    To record, an application should create a Recorder node, and set
+    its destination (the file name to which it should write). The
+    application should then add to the recorder node, every node it
+    wants to record. When adding a node to the recorder, the recorder
+    reads its configuration and records it. It also registers to every
+    possible event of the node, so that when any configuration change
+    takes place, it is also recorded.
+
+    Once all required nodes are added, the application can read data
+    from the nodes and record it. Recording of data can be achieved
+    either by explicitly calling the xn::Recorder::Record() function,
+    or by using one of the UpdateAll functions (see Reading Data).
+
+    Applications that initialize OpenNI using an XML file can easily
+    record their session without any change to the code. All that is
+    required is that they create an additional node in the XML file
+    for the recorder, add nodes to it, and when the application calls
+    one of the UpdateAll functions, recording will occur.
+    """
+    MEDIUM_FILE = XN_RECORD_MEDIUM_FILE
+    def __init__(self, Context context=None):
+        this = newRecorder()
+        if context:
+            contextPtr = <CContext*>(context._this)
+            this.Create(contextPtr[0])
+        self._this = this
+
+    def SetDestination(self, destType, strDest):
+        """
+        Tells the recorder where to record.
+
+        :param destType: The type of medium to record to. Currently
+            only RECORD_MEDIUM_FILE is supported
+
+         :param strDest: Recording destination. If destType is
+            RECORD_MEDIUM_FILE, this specifies a file name.
+        """
+        this = <CRecorder*>(self._this)
+        cdef char* s = strDest
+        status = this.SetDestination(destType, s)
+        assert status == XN_STATUS_OK
+        
+
+    def AddNodeToRecording(self, ProductionNode node, compression=CODEC_NULL):
+        """
+        Adds a node to recording and start recording it. This function
+        must be called on each node that is to be recorded with this
+        recorder.
+
+        :param node: The node to add to the recording.
+
+        :param compression: The type of compression that will be used
+        to encode the node's data. If CODEC_NULL is specified, a
+        default compression will be chosen according to the node type.
+        """
+        this = <CRecorder*>(self._this)
+        nodePtr = <CProductionNode*>(node._this)
+        status = this.AddNodeToRecording(nodePtr[0], compression)
+        assert status == XN_STATUS_OK
+
+    def RemoveNodeFromRecording(self, ProductionNode node):
+        """
+        Removes node from recording and stop recording it.
+        """
+        this = <CRecorder*>(self._this)
+        nodePtr = <CProductionNode*>(node._this)
+        status = this.RemoveNodeFromRecording(nodePtr[0])
+        assert status == XN_STATUS_OK
+
+    def Record(self):
+        """
+        Records one frame of data from each node that was added to the
+        recorder with xnAddNodeToRecording.
+        """
+        this = <CRecorder*>(self._this)
+        status = this.Record()
+        assert status == XN_STATUS_OK

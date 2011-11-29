@@ -163,15 +163,6 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     CSceneAnalyzer *newSceneAnalyzer "new xn::SceneAnalyzer" ()
 
-    ##### Recorder #####
-    cdef cppclass CRecorder "xn::Recorder" (CProductionNode):
-        XnStatus SetDestination(XnRecordMedium destType, XnChar *strDest)	
-        XnStatus AddNodeToRecording(CProductionNode &Node, XnCodecID compression)
-        XnStatus RemoveNodeFromRecording(CProductionNode &Node)
-        XnStatus Record()
-
-    CRecorder* newRecorder "new xn::Recorder" ()
-
     ##### Player #####
     cdef cppclass CPlayer "xn::Player" (CProductionNode):
         XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32& nFrames)
@@ -197,3 +188,13 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
     CContext *newContext "new xn::Context" ()
 
     void delContext "delete" (CContext *context)
+
+    ##### Recorder #####
+    cdef cppclass CRecorder "xn::Recorder" (CProductionNode):
+        XnStatus SetDestination(XnRecordMedium destType, XnChar *strDest)	
+        XnStatus AddNodeToRecording(CProductionNode &Node, XnCodecID compression)
+        XnStatus RemoveNodeFromRecording(CProductionNode &Node)
+        XnStatus Record()
+        XnStatus Create(CContext &context, XnChar* strFormatName=*)
+
+    CRecorder* newRecorder "new xn::Recorder" ()

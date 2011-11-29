@@ -15,13 +15,13 @@ cvlabel = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 context = xn.Context()
 
 node = context.InitFromXmlFile('demo.xml')
-# node = context.OpenFileRecording('capture.oni')
+# node = context.OpenFileRecording('test.oni')
 assert node
 
-depthGenerator = context.FindExistingNode(xn.NODE_TYPE_DEPTH)
-imageGenerator = context.FindExistingNode(xn.NODE_TYPE_IMAGE)
+depthGenerator = context.FindExistingNode(xn.Node.TYPE_DEPTH)
+imageGenerator = context.FindExistingNode(xn.Node.TYPE_IMAGE)
 # recorder = context.FindExistingNode(xn.NODE_TYPE_RECORDER)
-sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
+sceneAnalyzer = context.FindExistingNode(xn.Node.TYPE_SCENE)
 
 
 try:
