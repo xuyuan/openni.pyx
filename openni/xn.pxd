@@ -167,7 +167,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus InitFromXmlFile(XnChar* strFileName, CScriptNode& scriptNode)
         XnStatus FindExistingNode(XnProductionNodeType nodeType, CProductionNode& node)
         XnStatus OpenFileRecording(XnChar* strFileName, CProductionNode& playerNode)
-        XnStatus WaitAndUpdateAll() nogil
+        XnStatus WaitAndUpdateAll()
     CContext *newContext "new xn::Context" ()
 
     void delContext "delete" (CContext *context)

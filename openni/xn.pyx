@@ -419,6 +419,5 @@ cdef class Context:
         Updates all generators nodes in the context, waiting for all
         to have new data.
         """
-        with nogil:
-            status = self._this.WaitAndUpdateAll()
+        status = self._this.WaitAndUpdateAll()
         return status == XN_STATUS_OK
