@@ -443,6 +443,17 @@ cdef class Player(ProductionNode):
         assert status == XN_STATUS_OK
         return nTimestamp
 
+    def IsEOF(self):
+        """Checks whether the player is at the end-of-file marker.
+
+        .. note::
+
+            In the built-in ONI player, this function will never
+            return TRUE for a player that is in repeat mode
+        """
+        this = <CPlayer*>(self._this)
+        return this.IsEOF() != 0
+
 cdef class Context:
     """
     The context is the main object in OpenNI. A context is an object

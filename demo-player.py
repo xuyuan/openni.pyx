@@ -21,7 +21,7 @@ sceneAnalyzer = context.FindExistingNode(xn.NODE_TYPE_SCENE)
 
 
 # set player
-player.SetRepeat(True)
+player.SetRepeat(False)
 player.SetPlaybackSpeed(0)
 
 
@@ -36,7 +36,7 @@ if imageGenerator:
 print '-' * 30
 
 try:
-    while True:
+    while not player.IsEOF():
         # if not player.ReadNext():
             # break
 
