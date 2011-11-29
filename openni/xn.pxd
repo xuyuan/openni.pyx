@@ -111,13 +111,17 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     CSceneMetaData *newSceneMetaData "new xn::SceneMetaData" ()
 
+    ##### NodeWrapper #####
+    cdef cppclass CNodeWrapper "xn::NodeWrapper":
+        pass
+
+    void delNodeWrapper "delete" (CNodeWrapper *node)
+
     ##### ProductionNode #####
-    cdef cppclass CProductionNode "xn::ProductionNode":
+    cdef cppclass CProductionNode "xn::ProductionNode" (CNodeWrapper):
         pass
 
     CProductionNode *newProductionNode "new xn::ProductionNode" ()
-
-    void delProductionNode "delete" (CProductionNode *node)
 
     ##### ScriptNode #####
     cdef cppclass CScriptNode "xn::ScriptNode" (CProductionNode):
@@ -157,7 +161,13 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus RemoveNodeFromRecording(CProductionNode &Node)
         XnStatus Record()
 
-    CRecorder *newRecorder "new xn::Recorder" ()
+    CRecorder* newRecorder "new xn::Recorder" ()
+
+    ##### Player #####
+    cdef cppclass CPlayer "xn::Player" (CProductionNode):
+        XnStatus GetNumFrames(XnChar* strNodeName, XnUInt32 & nFrames) 
+
+    CPlayer* newPlayer "new xn::Player" ()
 
     ##### Context #####
     cdef cppclass CContext "xn::Context":

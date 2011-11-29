@@ -125,14 +125,21 @@ cdef class SceneMetaData(MapMetaData):
         return np.PyArray_SimpleNewFromData(2, shape,
                                             np.NPY_UINT16, <void*>data)
 
-cdef class ProductionNode:
-    cdef CProductionNode* _this
+cdef class Node:
+    """Base class for all node"""
+    cdef CNodeWrapper* _this
+
+    def __init__(self):
+        raise NotImplemented
+
+    def __dealloc__(self):
+        delNodeWrapper(self._this)
+
+cdef class ProductionNode(Node):
 
     def __init__(self):
         self._this = newProductionNode()
 
-    def __dealloc__(self):
-        delProductionNode(self._this)
 
 cdef class ScriptNode(ProductionNode):
 
@@ -324,7 +331,8 @@ cdef class Recorder(ProductionNode):
         default compression will be chosen according to the node type.
         """
         this = <CRecorder*>(self._this)
-        status = this.AddNodeToRecording(node._this[0], compression)
+        nodePtr = <CProductionNode*>(node._this)
+        status = this.AddNodeToRecording(nodePtr[0], compression)
         assert status == XN_STATUS_OK
 
     def RemoveNodeFromRecording(self, ProductionNode node):
@@ -332,7 +340,8 @@ cdef class Recorder(ProductionNode):
         Removes node from recording and stop recording it.
         """
         this = <CRecorder*>(self._this)
-        status = this.RemoveNodeFromRecording(node._this[0])
+        nodePtr = <CProductionNode*>(node._this)
+        status = this.RemoveNodeFromRecording(nodePtr[0])
         assert status == XN_STATUS_OK
 
     def Record(self):
@@ -343,6 +352,26 @@ cdef class Recorder(ProductionNode):
         this = <CRecorder*>(self._this)
         status = this.Record()
         assert status == XN_STATUS_OK
+
+cdef class Player(ProductionNode):
+    """Reads data from a recording and plays it"""
+    def __init__(self):
+        self._this = newPlayer()
+
+    def GetNumFrames(self, strNodeName):
+        """
+        Retrieves the number of frames of a specific node played by a
+        player.
+
+        :param strNodeName: The name of the node for which to retrieve
+            the number of frames.
+        """
+        this = <CPlayer*>(self._this)
+        cdef char* s = strNodeName
+        cdef XnUInt32 pnFrames
+        status = this.GetNumFrames(s, pnFrames)
+        assert status == XN_STATUS_OK
+        return pnFrames
 
 cdef class Context:
     """
@@ -395,8 +424,8 @@ cdef class Context:
             node = Recorder()
         else:
             node = ProductionNode()
-
-        status = self._this.FindExistingNode(nodeType, node._this[0])
+        nodePtr = <CProductionNode*>(node._this)
+        status = self._this.FindExistingNode(nodeType, nodePtr[0])
         if status == XN_STATUS_OK:
             return node
 
@@ -405,10 +434,11 @@ cdef class Context:
         Opens a recording file, adding all nodes in it to the context.
         """
         cdef char* s = strFileName
-        playerNode = ProductionNode()
-        status = self._this.OpenFileRecording(s, playerNode._this[0])
+        player = Player()
+        playerPtr = <CPlayer*>(player._this)
+        status = self._this.OpenFileRecording(s, playerPtr[0])
         if status == XN_STATUS_OK:
-            return playerNode
+            return player
 
     def WaitAndUpdateAll(self):
         """
