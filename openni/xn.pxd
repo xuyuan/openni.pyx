@@ -113,7 +113,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
 
     ##### NodeWrapper #####
     cdef cppclass CNodeWrapper "xn::NodeWrapper":
-        pass
+        XnChar* GetName()
 
     void delNodeWrapper "delete" (CNodeWrapper *node)
 

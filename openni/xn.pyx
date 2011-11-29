@@ -135,6 +135,12 @@ cdef class Node:
     def __dealloc__(self):
         delNodeWrapper(self._this)
 
+    def GetName(self):
+        cdef char* s = <char*>(self._this.GetName())
+        cdef bytes name
+        name = s
+        return name
+
 cdef class ProductionNode(Node):
 
     def __init__(self):
