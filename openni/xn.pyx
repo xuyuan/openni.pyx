@@ -391,14 +391,6 @@ cdef class Player(ProductionNode):
         status = this.SetRepeat(bRepeat)
         assert status == XN_STATUS_OK
 
-    def ReadNext(self):
-        """
-        Reads the next data element from the player.
-        """
-        this = <CPlayer*>(self._this)
-        status = this.ReadNext()
-        return status == XN_STATUS_OK
-
     def SetPlaybackSpeed(self, dSpeed):
         """
         Sets the playback speed, as a ratio of the time passed in the

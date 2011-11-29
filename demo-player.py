@@ -39,9 +39,6 @@ singleStep = False
 
 try:
     while not player.IsEOF():
-        # if not player.ReadNext():
-            # break
-
         if not context.WaitAndUpdateAll():
             break
 
