@@ -172,6 +172,7 @@ cdef extern from "XnCppWrapper.h" namespace "xn":
         XnStatus SetRepeat(XnBool bRepeat)
         XnStatus ReadNext()
         XnStatus SetPlaybackSpeed(XnDouble dSpeed)
+        XnDouble GetPlaybackSpeed()
         XnStatus TellFrame(XnChar* strNodeName, XnUInt32& nFrame)
         XnStatus TellTimestamp(XnUInt64& nTimestamp)
 

@@ -410,6 +410,14 @@ cdef class Player(ProductionNode):
         status = this.SetPlaybackSpeed(dSpeed)
         return status == XN_STATUS_OK
 
+    def GetPlaybackSpeed(self):
+        """
+        Gets the playback speed. see :func:`SetPlaybackSpeed` for more
+        details.
+        """
+        this = <CPlayer*>(self._this)
+        return this.GetPlaybackSpeed()
+
     def TellFrame(self, strNodeName):
         """
         Reports the current frame number of a specific node played by

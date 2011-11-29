@@ -26,6 +26,7 @@ player.SetPlaybackSpeed(0)
 
 
 print '-'*10, 'Player', '-'*10
+print 'Playback speed:', player.GetPlaybackSpeed()
 if depthGenerator:
     depthName = depthGenerator.GetName()
     print depthName, 'num frames:', player.GetNumFrames(depthName)
