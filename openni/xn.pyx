@@ -194,8 +194,8 @@ cdef class DepthGenerator(ProductionNode):
 
         for y in range(h):
             for x in range(w):
-                aProjective[y, x, 0] = y
-                aProjective[y, x, 1] = x
+                aProjective[y, x, 0] = x
+                aProjective[y, x, 1] = y
                 aProjective[y, x, 2] = pixel[y, x]
         return aProjective
 
