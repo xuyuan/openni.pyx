@@ -5,6 +5,7 @@ all:
 clean:
 	rm -rf build
 	rm openni/*.so
+	rm openni/*.cpp
 
 install:
 	python setup.py install
