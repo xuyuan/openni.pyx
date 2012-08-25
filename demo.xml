@@ -16,14 +16,14 @@
 
     <Node type="Image" name="Image1">
       <Configuration>
-	<MapOutputMode xRes="640" yRes="480" FPS="30"/>
+    	<MapOutputMode xRes="640" yRes="480" FPS="30"/>
       </Configuration>
     </Node>
 
     <Node type="Depth" name="Depth1">
       <Configuration>
-	<MapOutputMode xRes="640" yRes="480" FPS="30"/>
-	<AlternativeViewPoint>Image1</AlternativeViewPoint>
+    	<MapOutputMode xRes="640" yRes="480" FPS="30"/>
+    	<!-- <AlternativeViewPoint>Image1</AlternativeViewPoint> -->
       </Configuration>
     </Node>
 
@@ -35,8 +35,8 @@
     <!--   </Configuration> -->
     <!-- </Node> -->
 
-    <Node type="Scene" name="Scene1">
-      <MapOutputMode xRes="640" yRes="480" FPS="30"/>
-    </Node>
+    <!-- <Node type="Scene" name="Scene1"> -->
+    <!--   <MapOutputMode xRes="640" yRes="480" FPS="30"/> -->
+    <!-- </Node> -->
   </ProductionNodes>
 </OpenNI>
