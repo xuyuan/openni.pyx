@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import sys
 from openni import xn
 
 import cv
@@ -10,7 +10,7 @@ cvlabel = cv.CreateImageHeader( (640, 480), cv.IPL_DEPTH_16U, 1 )
 
 context = xn.Context()
 
-player = context.OpenFileRecording('capture.oni')
+player = context.OpenFileRecording(sys.argv[1])
 assert player
 assert isinstance(player, xn.Player)
 
